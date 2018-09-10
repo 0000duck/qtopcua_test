@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     updateUiState();
 
-    mServerUrl->setText("opc.tcp://127.0.0.1:43344");
+    mServerUrl->setText("opc.tcp://191.168.0.191:4840");
     mOpcUaPlugin->addItems(mOpcUaProvider->availableBackends());
     mLog->setReadOnly(true);
     mLog->setLineWrapMode(QPlainTextEdit::NoWrap);
@@ -166,6 +166,8 @@ void MainWindow::connectToServer()
         return;
     }
 
+
+
     mOpcUaClient = mOpcUaProvider->createClient(mOpcUaPlugin->currentText());
     if (!mOpcUaClient) {
         const QString message(tr("Connecting to the given sever failed. See the log for details."));
@@ -179,7 +181,11 @@ void MainWindow::connectToServer()
     connect(mOpcUaClient, &QOpcUaClient::errorChanged, this, &MainWindow::clientError);
     connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &MainWindow::clientState);
 
-    mOpcUaClient->connectToEndpoint(mServerUrl->text());
+    QUrl myUrl;
+    myUrl.setUserName("OpcUaClient");
+    myUrl.setPassword("Password2018");
+    myUrl.setUrl(mServerUrl->text());
+    mOpcUaClient->connectToEndpoint(myUrl);
 }
 
 void MainWindow::clientConnected()
